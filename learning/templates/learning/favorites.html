@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Mes favoris — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Mes favoris ❤️</h1>
+<div class="ll-card">
+    {% for fav in favorites %}
+    <div class="ll-word-row">
+        <div>
+            <div style="font-weight:600;">{{ fav.vocabulary.word }}</div>
+            <div class="text-muted-ll" style="font-size:0.85rem;">{{ fav.vocabulary.translation }}</div>
+        </div>
+        <form method="post" action="{% url 'content:toggle_favorite' fav.vocabulary.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'learning:favorites' %}">
+            <button class="ll-fav-btn" type="submit">❤️</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Aucun mot favori pour le moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

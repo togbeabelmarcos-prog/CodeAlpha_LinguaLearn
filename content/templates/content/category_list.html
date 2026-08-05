@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Vocabulaire — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Vocabulaire 📘</h1>
+<p class="text-muted-ll">Choisissez une catégorie pour commencer.</p>
+<div class="ll-grid">
+    {% for category in categories %}
+    <a href="{% url 'content:vocabulary_list' category.slug %}" class="ll-quick-tile">
+        <span class="icon">{{ category.icon }}</span> {{ category.name }}
+    </a>
+    {% empty %}
+    <p>Aucune catégorie disponible.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — LinguaLearn{% endblock %}
+{% block content %}
+<a href="{% url 'content:category_list' %}" class="text-muted-ll">← Retour aux catégories</a>
+<h1>{{ category.icon }} {{ category.name }}</h1>
+
+<div class="ll-card">
+    {% for word in words %}
+    <div class="ll-word-row">
+        <div>
+            <div style="font-weight:600;">{{ word.word }}</div>
+            <div class="text-muted-ll" style="font-size:0.85rem;">/{{ word.pronunciation }}/ — {{ word.translation }}</div>
+        </div>
+        <form method="post" action="{% url 'content:toggle_favorite' word.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button class="ll-fav-btn" type="submit" title="Ajouter aux favoris">
+                {% if word.id in favorite_ids %}❤️{% else %}🤍{% endif %}
+            </button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Aucun mot disponible pour cette catégorie et cette langue pour le moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

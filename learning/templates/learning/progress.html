@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Ma progression — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Ma progression 🏆</h1>
+
+<div class="ll-card" style="display:flex;align-items:center;gap:16px;">
+    <div style="font-size:2.2rem;">🔥</div>
+    <div>
+        <div style="font-weight:700;font-size:1.3rem;">{{ progress.daily_streak }} jours</div>
+        <div class="text-muted-ll">Série en cours</div>
+    </div>
+</div>
+
+<div class="ll-card">
+    <div>
+        <div style="display:flex;justify-content:space-between;"><span>Mots appris</span><span>{{ progress.words_learned }}</span></div>
+        <div class="ll-progress-track"><div class="ll-progress-fill" style="width: {% widthratio progress.words_learned 200 100 %}%;"></div></div>
+    </div>
+    <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;"><span>Leçons terminées</span><span>{{ progress.lessons_completed }}</span></div>
+        <div class="ll-progress-track"><div class="ll-progress-fill" style="width: {% widthratio progress.lessons_completed 20 100 %}%; background:var(--accent);"></div></div>
+    </div>
+</div>
+
+<h3>Badges</h3>
+<div class="ll-grid">
+    {% for badge in all_badges %}
+    <div class="ll-quick-tile" style="{% if badge.id not in earned_ids %}opacity:0.35;{% endif %}">
+        <span class="icon">{{ badge.icon }}</span>
+        {{ badge.title }}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

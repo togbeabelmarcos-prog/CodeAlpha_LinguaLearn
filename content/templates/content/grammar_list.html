@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Grammaire — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Grammaire 📝</h1>
+<p class="ll-intro">Les leçons sont classées du niveau débutant à avancé. Lisez l'explication, regardez les
+exemples, puis marquez la leçon comme terminée pour suivre votre progression.</p>
+
+{% for group in grouped %}
+<div class="quiz-section-title"><span>{{ group.icon }}</span> {{ group.label }}</div>
+
+{% for lesson in group.lessons %}
+<div class="ll-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;">{{ lesson.title }}</h3>
+        {% if lesson.id in done_ids %}
+            <span class="ll-badge-pill">✓ Terminée</span>
+        {% endif %}
+    </div>
+    <p style="margin-top:10px;">{{ lesson.explanation }}</p>
+    {% if lesson.examples.all %}
+    <div class="text-muted-ll" style="font-weight:600;margin-top:8px;">Exemples :</div>
+    <ul>
+        {% for example in lesson.examples.all %}
+        <li>{{ example.text }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if lesson.id not in done_ids %}
+    <form method="post" action="{% url 'content:mark_lesson_done' lesson.id %}">
+        {% csrf_token %}
+        <button class="ll-btn ll-btn-outline" type="submit">Marquer comme terminée ✓</button>
+    </form>
+    {% endif %}
+</div>
+{% endfor %}
+{% empty %}
+<p>Pas encore de leçons pour cette langue.</p>
+{% endfor %}
+{% endblock %}

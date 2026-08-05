@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Réglages — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Réglages ⚙️</h1>
+
+<div class="ll-card">
+    <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;">
+            {{ user.first_name|default:user.username|first|upper }}
+        </div>
+        <div>
+            <div style="font-weight:600;">{{ user.first_name|default:user.username }}</div>
+            <div class="text-muted-ll">{{ user.email }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="ll-card">
+    <h3>Préférences</h3>
+    <form method="post">
+        {% csrf_token %}
+        <label>Langue d'apprentissage</label>
+        {{ form.current_language }}
+        <div style="margin-top:14px;display:flex;align-items:center;gap:10px;">
+            {{ form.dark_mode }} <label for="{{ form.dark_mode.id_for_label }}">Mode sombre</label>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:10px;">
+            {{ form.notifications_enabled }} <label for="{{ form.notifications_enabled.id_for_label }}">Notifications quotidiennes</label>
+        </div>
+        <button class="ll-btn" style="margin-top:18px;" type="submit">Enregistrer</button>
+    </form>
+</div>
+
+<div class="ll-card">
+    <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="ll-btn ll-btn-block" style="background:var(--error);border:none;">Se déconnecter</button>
+    </form>
+</div>
+{% endblock %}

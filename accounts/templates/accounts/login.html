@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Connexion — LinguaLearn{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="ll-card">
+        <h1 style="font-size:1.6rem;">Bon retour ! 👋</h1>
+        <p class="text-muted-ll">Connectez-vous pour continuer votre apprentissage.</p>
+
+        {% if form.errors %}
+            <div class="alert-ll alert-error-ll">Identifiants incorrects. Réessayez.</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <label>Nom d'utilisateur</label>
+            <input class="ll-input" type="text" name="username" required autofocus>
+            <label>Mot de passe</label>
+            <input class="ll-input" type="password" name="password" required>
+            <button class="ll-btn ll-btn-block" type="submit">Se connecter</button>
+        </form>
+
+        <p style="margin-top:14px;"><a href="{% url 'accounts:password_reset' %}">Mot de passe oublié ?</a></p>
+        <p>Pas encore de compte ? <a href="{% url 'accounts:register' %}">S'inscrire</a></p>
+    </div>
+</div>
+{% endblock %}

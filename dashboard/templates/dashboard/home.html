@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Accueil — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Bonjour, {{ user.first_name|default:user.username }} 👋</h1>
+<p class="text-muted-ll">Prêt(e) pour votre leçon du jour ?</p>
+
+{% if today_lesson %}
+<a href="{% url 'content:grammar_list' %}" class="ll-card" style="display:flex;align-items:center;gap:16px;">
+    <div style="width:52px;height:52px;border-radius:14px;background:rgba(108,78,245,0.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">☀️</div>
+    <div>
+        <div style="font-weight:600;">Leçon du jour</div>
+        <div class="text-muted-ll">{{ today_lesson.title }}</div>
+    </div>
+</a>
+{% endif %}
+
+<h3 style="margin-top:24px;">Accès rapide</h3>
+<div class="ll-grid">
+    <a href="{% url 'content:category_list' %}" class="ll-quick-tile">
+        <span class="icon">📘</span> Vocabulaire
+    </a>
+    <a href="{% url 'content:grammar_list' %}" class="ll-quick-tile">
+        <span class="icon">📝</span> Grammaire
+    </a>
+    <a href="{% url 'content:flashcards' %}" class="ll-quick-tile">
+        <span class="icon">🃏</span> Flashcards
+    </a>
+    <a href="{% url 'content:quiz_list' %}" class="ll-quick-tile">
+        <span class="icon">🧠</span> Quiz
+    </a>
+</div>
+
+<div class="ll-card" style="margin-top:20px;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+        <div style="font-weight:600;">🔥 {{ progress.daily_streak }} jours</div>
+        <div class="text-muted-ll" style="font-size:0.85rem;">Série en cours</div>
+    </div>
+    <a href="{% url 'learning:favorites' %}" class="ll-btn ll-btn-outline">Mes favoris</a>
+</div>
+{% endblock %}

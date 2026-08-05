@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Flashcards — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Flashcards 🃏</h1>
+<p class="ll-intro">Une carte, un mot. Regardez le mot, essayez de deviner sa traduction dans votre tête,
+puis touchez la carte pour vérifier. Utilisez <strong>Suivant</strong> pour avancer dans le paquet.</p>
+
+{% if words %}
+<p class="text-muted-ll" id="counter">Carte 1 / {{ words|length }}</p>
+
+<div class="flashcard-scene">
+    <div class="flashcard-card" id="card">
+        <div class="flashcard-face flashcard-front" id="front"></div>
+        <div class="flashcard-face flashcard-back" id="back">
+            <div class="translation" id="translation"></div>
+            <div class="example" id="example"></div>
+        </div>
+    </div>
+</div>
+<p class="text-muted-ll" style="text-align:center;font-size:0.85rem;">👆 Touchez la carte pour la retourner</p>
+
+<div style="display:flex;justify-content:space-between;margin-top:20px;">
+    <button class="ll-btn ll-btn-outline" id="prevBtn">← Précédent</button>
+    <button class="ll-btn ll-btn-accent" id="nextBtn">Suivant →</button>
+</div>
+
+<script>
+const words = [
+    {% for word in words %}
+    {
+        id: {{ word.id }},
+        word: "{{ word.word|escapejs }}",
+        translation: "{{ word.translation|escapejs }}",
+        example: "{{ word.example|escapejs }}"
+    },
+    {% endfor %}
+];
+
+let index = 0;
+const cardEl = document.getElementById('card');
+const frontEl = document.getElementById('front');
+const translationEl = document.getElementById('translation');
+const exampleEl = document.getElementById('example');
+const counterEl = document.getElementById('counter');
+
+function render() {
+    const w = words[index];
+    frontEl.textContent = w.word;
+    translationEl.textContent = w.translation;
+    exampleEl.textContent = w.example;
+    counterEl.textContent = `Carte ${index + 1} / ${words.length}`;
+    cardEl.classList.remove('flipped');
+}
+
+cardEl.addEventListener('click', () => cardEl.classList.toggle('flipped'));
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+    index = (index < words.length - 1) ? index + 1 : 0;
+    render();
+});
+document.getElementById('prevBtn').addEventListener('click', () => {
+    index = (index > 0) ? index - 1 : words.length - 1;
+    render();
+});
+
+render();
+</script>
+{% else %}
+<p>Pas de flashcards disponibles pour cette langue.</p>
+{% endif %}
+{% endblock %}

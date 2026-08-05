@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LinguaLearn{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="{% if user.is_authenticated and user.profile.dark_mode %}dark-mode{% endif %}">
+
+    {% if user.is_authenticated %}
+    <nav class="ll-navbar">
+        <a href="{% url 'dashboard:home' %}" class="brand">
+            <span class="brand-icon">🌍</span> LinguaLearn
+        </a>
+        <div class="nav-links d-none d-md-block">
+            <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.view_name == 'dashboard:home' %}active{% endif %}">Accueil</a>
+            <a href="{% url 'content:category_list' %}" class="{% if 'vocabulaire' in request.path %}active{% endif %}">Vocabulaire</a>
+            <a href="{% url 'content:grammar_list' %}" class="{% if 'grammaire' in request.path %}active{% endif %}">Grammaire</a>
+            <a href="{% url 'content:flashcards' %}" class="{% if 'flashcards' in request.path %}active{% endif %}">Flashcards</a>
+            <a href="{% url 'content:quiz_list' %}">Quiz</a>
+            <a href="{% url 'learning:progress' %}" class="{% if 'progression' in request.path %}active{% endif %}">Progrès</a>
+            <a href="{% url 'accounts:settings' %}" class="{% if 'settings' in request.path %}active{% endif %}">Réglages</a>
+            <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none;border:none;color:rgba(255,255,255,0.85);font-weight:500;font-size:0.92rem;margin-left:18px;cursor:pointer;font-family:inherit;">Déconnexion</button>
+            </form>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container-ll">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-ll {% if message.tags == 'success' %}alert-success-ll{% elif message.tags == 'error' %}alert-error-ll{% else %}alert-info-ll{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <nav class="ll-bottom-nav d-md-none">
+        <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.view_name == 'dashboard:home' %}active{% endif %}">
+            <span class="nav-icon">🏠</span> Accueil
+        </a>
+        <a href="{% url 'content:category_list' %}" class="{% if 'vocabulaire' in request.path %}active{% endif %}">
+            <span class="nav-icon">📘</span> Vocab.
+        </a>
+        <a href="{% url 'content:flashcards' %}" class="{% if 'flashcards' in request.path %}active{% endif %}">
+            <span class="nav-icon">🃏</span> Cartes
+        </a>
+        <a href="{% url 'learning:progress' %}" class="{% if 'progression' in request.path %}active{% endif %}">
+            <span class="nav-icon">🏆</span> Progrès
+        </a>
+        <a href="{% url 'accounts:settings' %}" class="{% if 'settings' in request.path %}active{% endif %}">
+            <span class="nav-icon">⚙️</span> Réglages
+        </a>
+    </nav>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

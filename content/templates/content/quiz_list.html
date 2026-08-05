@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Quiz — LinguaLearn{% endblock %}
+{% block content %}
+<h1>Quiz 🧠</h1>
+<p class="ll-intro">Choisissez un thème et un niveau, puis répondez en cliquant directement sur votre
+réponse — pas besoin de valider, ça avance tout seul ! Faites au moins un quiz par jour pour garder
+votre série active.</p>
+
+{% if daily_quiz %}
+<div class="daily-quiz-card">
+    <div class="daily-quiz-label">⭐ Défi du jour</div>
+    <h2 style="margin:6px 0 2px;">{{ daily_quiz.title }}</h2>
+    <div style="opacity:0.85;font-size:0.9rem;">{{ daily_quiz.get_level_display }}</div>
+    {% if daily_done %}
+        <div class="daily-quiz-done">✅ Terminé aujourd'hui — revenez demain !</div>
+    {% else %}
+        <a href="{% url 'content:quiz_daily_start' %}" class="ll-btn ll-btn-accent" style="margin-top:14px;">Relever le défi →</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% for section in sections %}
+<div class="quiz-section-title"><span>{{ section.icon }}</span> {{ section.name }}</div>
+<div class="ll-card">
+    {% for quiz in section.quizzes %}
+    <div class="quiz-row">
+        <div>
+            <div style="font-weight:600;">{{ quiz.title }}</div>
+            <span class="level-badge level-{{ quiz.level }}">{{ quiz.get_level_display }}</span>
+        </div>
+        <a href="{% url 'content:quiz_start' quiz.id %}" class="ll-btn ll-btn-outline" style="padding:9px 16px;font-size:0.88rem;">Jouer</a>
+    </div>
+    {% endfor %}
+</div>
+{% empty %}
+<p>Aucun quiz disponible pour cette langue pour le moment.</p>
+{% endfor %}
+{% endblock %}

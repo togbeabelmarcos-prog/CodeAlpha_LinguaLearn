@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Résultat du quiz — LinguaLearn{% endblock %}
+{% block content %}
+<div class="confetti-wrap">
+    {% if result.percentage >= 60 %}
+    <span class="confetti" style="left:15%; animation-delay:0.05s;">🎉</span>
+    <span class="confetti" style="left:35%; animation-delay:0.15s;">✨</span>
+    <span class="confetti" style="left:55%; animation-delay:0.05s;">🎊</span>
+    <span class="confetti" style="left:70%; animation-delay:0.25s;">✨</span>
+    <span class="confetti" style="left:85%; animation-delay:0.1s;">🎉</span>
+    {% endif %}
+</div>
+
+<div class="ll-card result-pop" style="text-align:center;">
+    <div class="score-circle" style="--pct: {{ result.percentage }};">
+        <span>{{ result.percentage }}%</span>
+    </div>
+
+    {% if result.percentage >= 80 %}
+        <h1>Excellent ! 🏆</h1>
+        <p class="text-muted-ll">Vous maîtrisez déjà bien ce thème.</p>
+    {% elif result.percentage >= 60 %}
+        <h1>Bien joué ! 👏</h1>
+        <p class="text-muted-ll">Encore un peu de pratique et ce sera parfait.</p>
+    {% else %}
+        <h1>Continuez à vous entraîner ! 💪</h1>
+        <p class="text-muted-ll">Chaque essai vous rapproche de la maîtrise.</p>
+    {% endif %}
+
+    <p style="font-size:1.1rem;font-weight:600;">{{ result.score }} / {{ result.total_questions }} bonnes réponses</p>
+
+    {% if is_daily %}
+    <div class="ll-badge-pill" style="margin-top:6px;">⭐ Défi du jour relevé !</div>
+    {% endif %}
+
+    <div style="display:flex;gap:12px;margin-top:20px;justify-content:center;flex-wrap:wrap;">
+        <a href="{% url 'content:quiz_list' %}" class="ll-btn">Voir d'autres quiz</a>
+        <a href="{% url 'dashboard:home' %}" class="ll-btn ll-btn-outline">Retour à l'accueil</a>
+    </div>
+</div>
+{% endblock %}
