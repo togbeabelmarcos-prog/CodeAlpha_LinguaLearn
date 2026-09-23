@@ -108,33 +108,47 @@ PostgreSQL/MySQL en production, il suffit d'adapter `DATABASES` dans
 
 ## Déploiement sur Render
 
-Le projet est prêt pour Render : `render.yaml` définit le service web
-(Gunicorn + WhiteNoise) et une base PostgreSQL gratuite, branchés
-automatiquement via `DATABASE_URL`.
+Stack gratuite et pérenne : **Render** (service web) + **Neon**
+(PostgreSQL) + **Cloudinary** (images/audio). Les données et médias
+survivent aux redéploiements.
 
-### Étapes
+### 1. Créer la base Neon (~5 min)
 
-1. Pousse le projet sur GitHub (déjà configuré avec `origin`).
-2. Sur [render.com](https://dashboard.render.com) : **New → Blueprint**
-   → connecte le dépôt **togbeabelmarcos-prog/CodeAlpha_LinguaLearn** →
-   Render lit `render.yaml` → **Apply**.
-3. Attends le build (install, `migrate`, `seed_data`, `collectstatic`).
-4. Ouvre l'URL générée : `https://lingualearn-xxxx.onrender.com`.
+1. Inscris-toi sur [neon.tech](https://neon.tech) (gratuit)
+2. Crée un projet → copie la **Connection string**
+   (format `postgresql://...@ep-xxx.neon.tech/neondb?sslmode=require`)
+
+### 2. Créer le compte Cloudinary (~5 min)
+
+1. Inscris-toi sur [cloudinary.com](https://cloudinary.com) (gratuit)
+2. Dashboard → section **Product Environment Credentials** → copie
+   l'**API environment variable**
+   (format `cloudinary://api_key:api_secret@cloud_name`)
+
+### 3. Déployer sur Render
+
+1. Sur [dashboard.render.com](https://dashboard.render.com) :
+   **New → Blueprint** → connecte le dépôt
+   **togbeabelmarcos-prog/CodeAlpha_LinguaLearn** → **Apply**
+2. Quand Render demande les variables :
+   - `DATABASE_URL` → la connection string Neon
+   - `CLOUDINARY_URL` → la variable Cloudinary
+   (sinon : onglet **Environment** du service → ajoute-les manuellement)
+3. Attends le build (install → migrate → `seed_data` → collectstatic)
+4. Ouvre l'URL générée : `https://lingualearn-xxxx.onrender.com`
 
 Chaque `git push` sur `main` redéploie automatiquement.
 
-### Limites du plan gratuit
+### Notes
 
-- **PostgreSQL gratuit : expire 30 jours après création** — pense à
-  exporter tes données ou passer sur un plan payant avant.
-- Les fichiers uploadés via l'admin (images/audio `media/`) sont
-  perdus à chaque redéploiement (disque éphémère).
 - Les emails (reset de mot de passe) restent en mode console : pour
-  l'envoi réel, configure un SMTP (Brevo, Mailgun…) via les variables
+  l'envoi réel, configure un SMTP (Brevo, Mailgun…) via
   `EMAIL_BACKEND`, `EMAIL_HOST`… dans le dashboard Render.
-- Créer un superuser : via l'onglet **Shell** du service Render :
+- Créer un superuser : onglet **Shell** du service Render →
   `python manage.py createsuperuser`, ou promote un compte créé sur
   le site via `python manage.py shell`.
+- En local, sans `CLOUDINARY_URL`, les médias restent sur le disque
+  (`media/`) : le comportement d'origine est inchangé.
 
 ## Prochaines étapes suggérées
 

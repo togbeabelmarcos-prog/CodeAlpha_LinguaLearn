@@ -149,6 +149,9 @@ STORAGES = {
     },
 }
 
+if os.environ.get("CLOUDINARY_URL"):
+    STORAGES["default"] = {"BACKEND": "config.storages.MediaStorage"}
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
