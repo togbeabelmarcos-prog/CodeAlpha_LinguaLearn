@@ -106,6 +106,36 @@ SQLite par défaut (`db.sqlite3`, créé automatiquement par
 PostgreSQL/MySQL en production, il suffit d'adapter `DATABASES` dans
 `config/settings.py`.
 
+## Déploiement sur Render
+
+Le projet est prêt pour Render : `render.yaml` définit le service web
+(Gunicorn + WhiteNoise) et une base PostgreSQL gratuite, branchés
+automatiquement via `DATABASE_URL`.
+
+### Étapes
+
+1. Pousse le projet sur GitHub (déjà configuré avec `origin`).
+2. Sur [render.com](https://dashboard.render.com) : **New → Blueprint**
+   → connecte le dépôt **togbeabelmarcos-prog/CodeAlpha_LinguaLearn** →
+   Render lit `render.yaml` → **Apply**.
+3. Attends le build (install, `migrate`, `seed_data`, `collectstatic`).
+4. Ouvre l'URL générée : `https://lingualearn-xxxx.onrender.com`.
+
+Chaque `git push` sur `main` redéploie automatiquement.
+
+### Limites du plan gratuit
+
+- **PostgreSQL gratuit : expire 30 jours après création** — pense à
+  exporter tes données ou passer sur un plan payant avant.
+- Les fichiers uploadés via l'admin (images/audio `media/`) sont
+  perdus à chaque redéploiement (disque éphémère).
+- Les emails (reset de mot de passe) restent en mode console : pour
+  l'envoi réel, configure un SMTP (Brevo, Mailgun…) via les variables
+  `EMAIL_BACKEND`, `EMAIL_HOST`… dans le dashboard Render.
+- Créer un superuser : via l'onglet **Shell** du service Render :
+  `python manage.py createsuperuser`, ou promote un compte créé sur
+  le site via `python manage.py shell`.
+
 ## Prochaines étapes suggérées
 
 - Ajout de nouvelles langues (ajoutez simplement une `Language` et du

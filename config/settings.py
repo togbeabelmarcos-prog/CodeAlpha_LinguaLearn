@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(k!pi-0(c^d=i0dkj%2klx*az^i)db5%#d17g@aa%fm_k_mq+z'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    'django-insecure-(k!pi-0(c^d=i0dkj%2klx*az^i)db5%#d17g@aa%fm_k_mq+z',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get("ALLOWED_HOSTS", "*").split(",") if h.strip()
+]
+if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+]
 
 
 # Application definition
@@ -45,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,13 +90,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Sur Render, DATABASE_URL (PostgreSQL) est injecté automatiquement ;
+# en local, on retombe sur SQLite.
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 
 # Password validation
@@ -122,10 +142,25 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"
+    },
+}
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Derrière le proxy TLS de Render
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Authentification
 LOGIN_URL = 'accounts:login'
@@ -134,4 +169,6 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # En développement, les emails (réinitialisation de mot de passe) sont
 # affichés dans la console au lieu d'être réellement envoyés.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
